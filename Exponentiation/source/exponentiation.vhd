@@ -79,6 +79,7 @@ begin
 
   -- b input of mult_c: P inside the loop, 1 for the final conversion
   b_c <= std_logic_vector(to_unsigned(1, C_block_size)) when state = LAST_START else p_slv;
+  -- let's us use one c_mult instead of 2
 
   -- C = mont(C, P, n)   and at the end   mont(C, 1, n)
   mult_c : entity work.montgomery_mult

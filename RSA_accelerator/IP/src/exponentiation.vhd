@@ -35,7 +35,7 @@ architecture Behavioral of exponentiation is
   -- R = 1 << C_block_size  (Montgomery radix, needs C_block_size+1 bits)
   constant R : unsigned(C_block_size downto 0) := shift_left(to_unsigned(1, C_block_size+1), C_block_size);
 
-  type state_t is (IDLE, MONT_REP, LOOP_START, LOOP_WAIT, LAST_START, LAST_WAIT, FINISH);
+  type state_t is (IDLE, MONT_SUB, MONT_SEL, LOOP_START, LOOP_WAIT, LAST_START, LAST_WAIT, FINISH);
   signal state, next_state : state_t;
 
   signal count : integer range 0 to C_block_size-1;
@@ -45,6 +45,10 @@ architecture Behavioral of exponentiation is
   signal c_reg     : unsigned(C_block_size-1 downto 0);
   signal n_reg     : unsigned(C_block_size-1 downto 0);
   signal key_e_reg : unsigned(C_block_size-1 downto 0);
+    -- mont_sub/sel
+  signal p2_reg   : unsigned(C_block_size downto 0);     -- 2P
+  signal diff_reg : unsigned(C_block_size+1 downto 0);   -- 2P - n, with borrow bit
+
 
   -- slv copies for the multiplier port maps
   signal p_slv : std_logic_vector(C_block_size-1 downto 0);
@@ -65,7 +69,6 @@ begin
   p_slv <= std_logic_vector(p_reg);
   c_slv <= std_logic_vector(c_reg);
   n_slv <= std_logic_vector(n_reg);
-
   -- handshakes
   ready_in  <= '1' when state = IDLE   else '0';
   valid_out <= '1' when state = FINISH else '0';
@@ -123,12 +126,17 @@ begin
     case state is
       when IDLE =>
         if valid_in = '1' then
-          next_state <= MONT_REP;
+          next_state <= MONT_SUB;
         end if;
 
-      when MONT_REP =>
+      when MONT_SUB =>
+        next_state <= MONT_SEL;
+
+      when MONT_SEL =>
         if count = C_block_size-1 then
           next_state <= LOOP_START;
+        else
+          next_state <= MONT_SUB;
         end if;
 
       when LOOP_START =>
@@ -164,7 +172,6 @@ begin
 
   -- Datapath
   datapath : process(clk, reset_n)
-    variable p2 : unsigned(C_block_size downto 0);
   begin
     if reset_n = '0' then
       p_reg     <= (others => '0');
@@ -184,12 +191,15 @@ begin
             count     <= 0;
           end if;
 
-        when MONT_REP => -- P = message * R mod n
-          p2 := p_reg & '0';                              -- P << 1
-          if p2 >= n_reg then
-            p_reg <= resize(p2 - n_reg, C_block_size);    -- subtract n
+        when MONT_SUB =>  -- compute 2P and 2P - n
+          p2_reg   <= p_reg & '0';
+          diff_reg <= resize(p_reg & '0', C_block_size+2) - resize(n_reg, C_block_size+2);
+
+        when MONT_SEL =>  -- pick result based on the borrow bit
+          if diff_reg(C_block_size+1) = '0' then     -- non-negative, so 2P >= n
+            p_reg <= diff_reg(C_block_size-1 downto 0);
           else
-            p_reg <= p2(C_block_size-1 downto 0);
+            p_reg <= p2_reg(C_block_size-1 downto 0);
           end if;
 
           if count = C_block_size-1 then

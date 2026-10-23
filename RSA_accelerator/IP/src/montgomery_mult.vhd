@@ -23,7 +23,7 @@ entity montgomery_mult is
 end entity;
 
 architecture rtl of montgomery_mult is
-  type state_t is (IDLE, FIRST, SECOND, FINISH);
+  type state_t is (IDLE, FIRST, SECOND, FIN_SUB, FIN_SEL);
   signal state, next_state : state_t;
 
   signal a_reg : unsigned(K-1 downto 0);
@@ -31,6 +31,7 @@ architecture rtl of montgomery_mult is
   signal n_reg : unsigned(K-1 downto 0);
   signal t_reg : unsigned(K+1 downto 0);   -- K+2 bits: holds the sum before shifting
   signal count : integer range 0 to K-1;
+  signal diff_reg : unsigned(K+2 downto 0);   -- t - n, top bit is the borrow
 begin
 
 
@@ -61,13 +62,18 @@ begin
 
       when SECOND =>
         if count = K-1 then
-          next_state <= FINISH;
+          next_state <= FIN_SUB;
         else
           next_state <= FIRST;
         end if;
 
-      when FINISH =>
+
+      when FIN_SUB =>
+        next_state <= FIN_SEL;
+ 
+      when FIN_SEL =>
         next_state <= IDLE;
+
 
       when others =>
         next_state <= IDLE;
@@ -109,11 +115,16 @@ begin
             count <= count + 1;
           end if;
 
-        when FINISH =>                       -- if t >= n: t -= n
-          if t_reg >= n_reg then
-            t_reg <= t_reg - n_reg;
+          when FIN_SUB =>               -- diff = t - n
+          diff_reg <= resize(t_reg, K+3) - resize(n_reg, K+3);
+ 
+        when FIN_SEL =>               -- keep diff if no borrow (t >= n)
+          if diff_reg(K+2) = '0' then
+            t_reg <= diff_reg(K+1 downto 0);
           end if;
           done <= '1';
+
+
 
         when others =>
           null;

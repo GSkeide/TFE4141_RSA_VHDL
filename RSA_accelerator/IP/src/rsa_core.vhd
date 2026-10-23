@@ -64,9 +64,9 @@ entity rsa_core is
 
 	);
 end rsa_core;
-
 architecture rtl of rsa_core is
-
+	signal signal_msgin_ready : std_logic;
+	signal last_reg      : std_logic;
 begin
 	i_exponentiation : entity work.exponentiation
 		generic map (
@@ -76,7 +76,7 @@ begin
 			message   => msgin_data  ,
 			key       => key_e_d     ,
 			valid_in  => msgin_valid ,
-			ready_in  => msgin_ready ,
+			ready_in  => signal_msgin_ready,
 			ready_out => msgout_ready,
 			valid_out => msgout_valid,
 			result    => msgout_data ,
@@ -85,6 +85,19 @@ begin
 			reset_n   => reset_n
 		);
 
-	msgout_last  <= msgin_last;
+	msgin_ready <= signal_msgin_ready;
+
+	last_capture : process(clk, reset_n)
+	begin
+		if reset_n = '0' then
+			last_reg <= '0';
+		elsif rising_edge(clk) then
+			if msgin_valid = '1' and signal_msgin_ready = '1' then
+				last_reg <= msgin_last;
+			end if;
+		end if;
+	end process;
+
+	msgout_last  <= last_reg;
 	rsa_status   <= (others => '0');
 end rtl;

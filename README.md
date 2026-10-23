@@ -7,5 +7,7 @@ Main vhd files are in exponentiation/source
 - montgomery_mult -- entity used in exponentiation.vhd two times
 
 
-To synthesize, use synthesize.tcl; not the synthesize button inside vivado as we need to synthesize 3 projects.
-Might need to run cleanup.tcl and regenerate_projects.tcl first.
+To synthesize: (To run .tcl: tools-> run tcl script)
+1. run cleanup.tcl
+2. run regenerate_projects.tcl
+3. run synthesize.tcl
