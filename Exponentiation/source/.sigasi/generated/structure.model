@@ -1,0 +1,250 @@
+{
+  "version": 7,
+  "name": "source",
+  "projectBaseDir": "file:///c:/Users/georg/Documents/VivadoProjects/tfe4141_rsa_integration_kit_2026/Exponentiation/source",
+  "compilationGroupModel": {
+    "groups": [
+      {
+        "language": "VHDL",
+        "currentWorkingDirectory": {
+          "platformUri": "platform:/resource/source/Design/",
+          "fileUri": "file:///c:/Users/georg/Documents/VivadoProjects/tfe4141_rsa_integration_kit_2026/Exponentiation/source/"
+        },
+        "resources": [
+          "platform:/resource/source/Targets/rtl/work/exponentiation.vhd",
+          "platform:/resource/source/Targets/rtl/work/montgomery_mult.vhd"
+        ],
+        "includePaths": [],
+        "includeFallbackToLocalDirectory": false,
+        "additionalEnvVars": {},
+        "initialDefines": [],
+        "continueFrom": null,
+        "inferOrder": true,
+        "allowUndefine": false,
+        "allowUndefineAll": false,
+        "conditionalVariables": {},
+        "targetContext": {
+          "root": {
+            "project": "source",
+            "version": "default",
+            "target": "rtl"
+          },
+          "actual": {
+            "project": "source",
+            "version": "default",
+            "target": "rtl"
+          }
+        }
+      }
+    ],
+    "resourceTargetContexts": {
+      "platform:/resource/source/Targets/rtl/work/exponentiation.vhd": {
+        "root": {
+          "project": "source",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "source",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/source/Targets/rtl/work/montgomery_mult.vhd": {
+        "root": {
+          "project": "source",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "source",
+          "version": "default",
+          "target": "rtl"
+        }
+      }
+    }
+  },
+  "linkedResources": [
+    {
+      "source": "platform:/resource/source",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/STD",
+      "target": "sigasiresource:/vhdl/2019/STD",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/IEEE",
+      "target": "sigasiresource:/vhdl/2019/IEEE",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/IEEE%20Synopsys",
+      "target": "sigasiresource:/vhdl/2019/IEEE%20Synopsys",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/Design",
+      "target": "file:///c:/Users/georg/Documents/VivadoProjects/tfe4141_rsa_integration_kit_2026/Exponentiation/source",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/Targets",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/Targets/rtl",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/Targets/rtl/work",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/source/Targets/rtl/work/exponentiation.vhd",
+      "target": "file:///c:/Users/georg/Documents/VivadoProjects/tfe4141_rsa_integration_kit_2026/Exponentiation/source/exponentiation.vhd",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/source/Targets/rtl/work/montgomery_mult.vhd",
+      "target": "file:///c:/Users/georg/Documents/VivadoProjects/tfe4141_rsa_integration_kit_2026/Exponentiation/source/montgomery_mult.vhd",
+      "type": 1
+    }
+  ],
+  "resourceInformation": {
+    "platform:/resource/source/Targets/rtl/Common%20Libraries": {
+      "library": "not mapped",
+      "version": null,
+      "isLibraryFile": false
+    },
+    "platform:/resource/source/Targets/rtl/work": {
+      "library": "work",
+      "version": null,
+      "isLibraryFile": false
+    },
+    "platform:/resource/source/Targets/rtl/work/exponentiation.vhd": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/source/Targets/rtl/work/montgomery_mult.vhd": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/STD": {
+      "library": "std",
+      "version": "VHDL 2019",
+      "isLibraryFile": true
+    },
+    "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/IEEE": {
+      "library": "ieee",
+      "version": "VHDL 2019",
+      "isLibraryFile": true
+    },
+    "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/IEEE%20Synopsys": {
+      "library": "ieee",
+      "version": "VHDL 2019",
+      "isLibraryFile": true
+    },
+    "platform:/resource/source": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    }
+  },
+  "dependencyInformation": {},
+  "virtualFolderContents": {
+    "platform:/resource": [
+      {
+        "source": "platform:/resource/source",
+        "target": "virtual:/virtual",
+        "type": 2
+      }
+    ],
+    "platform:/resource/source": [
+      {
+        "source": "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D",
+        "target": "virtual:/virtual",
+        "type": 2
+      },
+      {
+        "source": "platform:/resource/source/Design",
+        "target": "file:///c:/Users/georg/Documents/VivadoProjects/tfe4141_rsa_integration_kit_2026/Exponentiation/source",
+        "type": 2
+      },
+      {
+        "source": "platform:/resource/source/Targets",
+        "target": "virtual:/virtual",
+        "type": 2
+      }
+    ],
+    "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D": [
+      {
+        "source": "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/STD",
+        "target": "sigasiresource:/vhdl/2019/STD",
+        "type": 2
+      },
+      {
+        "source": "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/IEEE",
+        "target": "sigasiresource:/vhdl/2019/IEEE",
+        "type": 2
+      },
+      {
+        "source": "platform:/resource/source/VHDL%20Standard%20Libraries%5B2019%5D/IEEE%20Synopsys",
+        "target": "sigasiresource:/vhdl/2019/IEEE%20Synopsys",
+        "type": 2
+      }
+    ],
+    "platform:/resource/source/Targets": [
+      {
+        "source": "platform:/resource/source/Targets/rtl",
+        "target": "virtual:/virtual",
+        "type": 2
+      }
+    ],
+    "platform:/resource/source/Targets/rtl": [
+      {
+        "source": "platform:/resource/source/Targets/rtl/work",
+        "target": "virtual:/virtual",
+        "type": 2
+      }
+    ],
+    "platform:/resource/source/Targets/rtl/work": [
+      {
+        "source": "platform:/resource/source/Targets/rtl/work/exponentiation.vhd",
+        "target": "file:///c:/Users/georg/Documents/VivadoProjects/tfe4141_rsa_integration_kit_2026/Exponentiation/source/exponentiation.vhd",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/source/Targets/rtl/work/montgomery_mult.vhd",
+        "target": "file:///c:/Users/georg/Documents/VivadoProjects/tfe4141_rsa_integration_kit_2026/Exponentiation/source/montgomery_mult.vhd",
+        "type": 1
+      }
+    ]
+  },
+  "targets": {
+    "rtl": {
+      "directoryPath": "c:\\Users\\georg\\Documents\\VivadoProjects\\tfe4141_rsa_integration_kit_2026\\Exponentiation\\source",
+      "libraryMapping": {
+        "": [
+          "work"
+        ]
+      },
+      "declaredDependencies": [],
+      "kind": "MANUAL"
+    }
+  },
+  "configurableIncludes": {},
+  "cachedVersionMapping": null
+}
