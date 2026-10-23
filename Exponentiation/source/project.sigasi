@@ -1,0 +1,10 @@
+{
+    "name": "source",
+    "targets": {
+        "rtl": {
+            "libraryMapping": {
+                "": "work"
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+
+#Vivado generated folders
+*.cache/
+*.hw/
+*.runs/
+*.sim/
+*.gen/
+*.ip_user_files/
+.Xil/
+#Logs and journals
+*.jou
+*.log
+*.str
+vivado*.backup.*
+webtalk*
+vivado_pid*
+#Misc
+*.tmp
+dfx_runtime.txt
+.sigasi/generated/
