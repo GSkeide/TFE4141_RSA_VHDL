@@ -23,12 +23,13 @@ entity montgomery_mult is
 end entity;
 
 architecture rtl of montgomery_mult is
-  type state_t is (IDLE, FIRST, SECOND, FIN_SUB, FIN_SEL);
+  type state_t is (IDLE, ITER, FIN_SUB, FIN_SEL);
   signal state, next_state : state_t;
 
   signal a_reg : unsigned(K-1 downto 0);
   signal b_reg : unsigned(K-1 downto 0);
   signal n_reg : unsigned(K-1 downto 0);
+  signal bn_reg : unsigned(K downto 0);
   signal t_reg : unsigned(K+1 downto 0);   -- K+2 bits: holds the sum before shifting
   signal count : integer range 0 to K-1;
   signal diff_reg : unsigned(K+2 downto 0);   -- t - n, top bit is the borrow
@@ -54,17 +55,12 @@ begin
     case state is
       when IDLE =>
         if start = '1' then
-          next_state <= FIRST;
+          next_state <= ITER;
         end if;
 
-      when FIRST =>
-        next_state <= SECOND;
-
-      when SECOND =>
+      when ITER =>
         if count = K-1 then
           next_state <= FIN_SUB;
-        else
-          next_state <= FIRST;
         end if;
 
 
@@ -83,7 +79,11 @@ begin
 
   -- Datapath
   datapath : process(clk, rstn)
+    variable q      : std_logic;
+    variable sel    : std_logic_vector(1 downto 0);
+    variable addend : unsigned(K+1 downto 0);
   begin
+    
     if rstn = '0' then
       done <= '0';
     elsif rising_edge(clk) then
@@ -96,21 +96,24 @@ begin
             a_reg <= unsigned(a);
             b_reg <= unsigned(b);
             n_reg <= unsigned(n);
+            bn_reg <= resize(unsigned(b), K+1) + resize(unsigned(n), K+1);
             count <= 0;
           end if;
 
-        when FIRST =>   -- runs 256 times          -- if (a >> i) & 1: t += b
-          if a_reg(0) = '1' then
-            t_reg <= t_reg + b_reg;
-          end if;
+        when ITER =>   -- runs K times: t = (t + a_i*b + q*n) >> 1
+          -- q = LSB of (t + a_i*b), predicted without doing the add
+          q   := t_reg(0) xor (a_reg(0) and b_reg(0));
+          sel := a_reg(0) & q;
 
-        when SECOND =>   -- runs 256 times         -- if t & 1: t += n;  t >>= 1
-          if t_reg(0) = '1' then
-            t_reg <= shift_right(t_reg + n_reg, 1);
-          else
-            t_reg <= shift_right(t_reg, 1);
-          end if;
-          a_reg <= shift_right(a_reg, 1); -- shift a for the next if statement
+          case sel is
+            when "00"   => addend := (others => '0');
+            when "10"   => addend := resize(b_reg,  K+2);
+            when "01"   => addend := resize(n_reg,  K+2);
+            when others => addend := resize(bn_reg, K+2);
+          end case;
+
+          t_reg <= shift_right(t_reg + addend, 1);
+          a_reg <= shift_right(a_reg, 1);
           if count /= K-1 then
             count <= count + 1;
           end if;
