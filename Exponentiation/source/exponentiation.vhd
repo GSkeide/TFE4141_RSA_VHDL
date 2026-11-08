@@ -14,6 +14,8 @@ entity exponentiation is
     --input data
     message   : in  std_logic_vector(C_block_size-1 downto 0);
     key       : in  std_logic_vector(C_block_size-1 downto 0);
+    key_C     : in  std_logic_vector(C_block_size-1 downto 0);
+    key_K     : in  std_logic_vector(8 downto 0);
 
     --output control
     ready_out : in  std_logic;
@@ -92,6 +94,7 @@ begin
       a      => c_slv,
       b      => b_c,
       n      => n_slv,
+      key_K  => key_K,
       result => res_c
     );
 
@@ -106,6 +109,7 @@ begin
       a      => p_slv,
       b      => p_slv,
       n      => n_slv,
+      key_K  => key_K,
       result => res_p
     );
 
@@ -146,7 +150,7 @@ begin
       when LOOP_WAIT =>
         -- both multipliers have the same latency, so they finish together
         if done_p = '1' then
-          if count = C_block_size-1 or key_e_reg(C_block_size-1 downto 1) = 0 then
+          if count = unsigned(key_K)-1 or key_e_reg(C_block_size-1 downto 1) = 0 then
             next_state <= LAST_START;
           else
             next_state <= LOOP_START;
@@ -186,7 +190,7 @@ begin
         when IDLE =>
           if valid_in = '1' then
             p_reg     <= unsigned(message);
-            n_reg     <= unsigned(modulus);
+             n_reg     <= unsigned(modulus);
             key_e_reg <= unsigned(key);
             --c_reg     <= unsigned(c_init);
             count     <= 0;
@@ -195,7 +199,7 @@ begin
         when MONT_SUB =>  -- compute 2P and 2P - n
           p2_reg   <= p_reg & '0';
           diff_reg <= resize(p_reg & '0', C_block_size+2) - resize(n_reg, C_block_size+2);
-          c_reg    <= resize(R - n_reg, C_block_size);
+          c_reg    <= unsigned(key_C);  -- C = R - n, precomputed
 
         when MONT_SEL =>  -- pick result based on the borrow bit
           if diff_reg(C_block_size+1) = '0' then     -- non-negative, so 2P >= n
@@ -204,7 +208,7 @@ begin
             p_reg <= p2_reg(C_block_size-1 downto 0);
           end if;
 
-          if count = C_block_size-1 then
+          if count = unsigned(key_K)-1 then
             count <= 0;
           else
             count <= count + 1;
@@ -221,7 +225,7 @@ begin
             p_reg     <= unsigned(res_p);                 -- P = mont(P, P, n)
             key_e_reg <= shift_right(key_e_reg, 1);
 
-            if count = C_block_size-1 then
+            if count = unsigned(key_K)-1 then
               count <= 0;
             else
               count <= count + 1;

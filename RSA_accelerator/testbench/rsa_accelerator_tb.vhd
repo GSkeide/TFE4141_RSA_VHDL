@@ -63,6 +63,8 @@ architecture struct of rsa_accelerator_tb is
 	-----------------------------------------------------------------------------
 	signal key_e_d         : std_logic_vector(C_BLOCK_SIZE-1 downto 0);
 	signal key_n           : std_logic_vector(C_BLOCK_SIZE-1 downto 0);
+	signal key_C           : std_logic_vector(C_BLOCK_SIZE-1 downto 0);
+    signal key_K           : std_logic_vector(8 downto 0);
 	signal rsa_status      : std_logic_vector(31 downto 0);
 
 	-----------------------------------------------------------------------------
@@ -565,7 +567,8 @@ begin
 		end if;
 	end process;
 
-
+		key_K <= std_logic_vector(to_unsigned(256, 9));
+		key_C <= std_logic_vector(unsigned(not key_n) + 1);
 ---------------------------------------------------------------------------------
 -- Instantiate the design under test (DUT)
 ---------------------------------------------------------------------------------
@@ -601,6 +604,9 @@ u_rsa_core : entity work.rsa_core
 		-----------------------------------------------------------------------------
 		key_e_d                => key_e_d,
 		key_n                  => key_n,
+		key_C                  => key_C,
+        key_K                  => key_K,
+		
 		rsa_status             => rsa_status
 
 	);

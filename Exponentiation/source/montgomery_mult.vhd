@@ -18,6 +18,7 @@ entity montgomery_mult is
     a      : in  std_logic_vector(K-1 downto 0);
     b      : in  std_logic_vector(K-1 downto 0);
     n      : in  std_logic_vector(K-1 downto 0);
+    key_K  : in  std_logic_vector(8 downto 0);
     result : out std_logic_vector(K-1 downto 0)
   );
 end entity;
@@ -63,7 +64,7 @@ begin
         end if;
 
       when ITER =>
-        if count = K-1 then
+        if count = unsigned(key_K)-1 then
           next_state <= FIN_SUB;
         end if;
 
@@ -126,7 +127,7 @@ begin
 
           t_reg <= shift_right(t_reg + addend, 1);
           a_reg <= shift_right(a_reg, 1); -- shift a_reg right to get the next bit of a
-          if count /= K-1 then
+          if count /= unsigned(key_K)-1 then
             count <= count + 1;
           end if;
 

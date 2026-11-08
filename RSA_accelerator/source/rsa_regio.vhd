@@ -17,6 +17,8 @@
 --
 --   Registers   [7..0]: Used for the 256 bit key_n
 --   Registers  [15..8]: Used for the 256 bit key_e/key_d
+--   Registers [23..16]: Used for the 256 bit key_C (R mod n, R = 2^K)
+--   Register      [24]: key_K, bits 8 to 0 (Montgomery K, up to 256)
 --   Registers [31..16]: Unused
 --   Register      [32]: Status register
 --   Registers [63..33]: unimplemented, easy to add
@@ -43,6 +45,8 @@ entity rsa_regio is
 		-- Users to add ports here
 		key_e_d         : out std_logic_vector(C_BLOCK_SIZE-1 downto 0);
 		key_n           : out std_logic_vector(C_BLOCK_SIZE-1 downto 0);
+		key_C           : out std_logic_vector(C_BLOCK_SIZE-1 downto 0);
+		key_K           : out std_logic_vector(8 downto 0);
 		rsa_status      : in  std_logic_vector(31 downto 0);
 
 		-- User ports ends
@@ -384,6 +388,8 @@ begin
 	-- Add user logic here
 	key_n <= slv_reg(7) & slv_reg(6) & slv_reg(5) & slv_reg(4) & slv_reg(3) & slv_reg(2) & slv_reg(1) & slv_reg(0);
 	key_e_d  <= slv_reg(15) & slv_reg(14) & slv_reg(13) & slv_reg(12) & slv_reg(11) & slv_reg(10) & slv_reg(9) & slv_reg(8);
+	key_C   <= slv_reg(23) & slv_reg(22) & slv_reg(21) & slv_reg(20) & slv_reg(19) & slv_reg(18) & slv_reg(17) & slv_reg(16);
+	key_K <= slv_reg(24)(8 downto 0);
 
 	-- write to registers [63..33]
 	-- read from registers [31..16]
