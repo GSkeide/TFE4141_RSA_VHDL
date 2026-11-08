@@ -26,7 +26,7 @@ architecture struct of rsa_accelerator_tb is
 
 	-- RENAME this constant to "long_test" for more comprehensive tests
 	-- "short_test" for shorter tests
-	constant C_TESTCASE_FOLDER: string := "short_test";
+	constant C_TESTCASE_FOLDER: string := "long_test";
 
 	-----------------------------------------------------------------------------
 	-- Clocks and reset
@@ -338,7 +338,7 @@ begin
 			tc_ctrl_state          <= e_TC_START_TC;
 			key_n                  <= (others => '0');
 			key_e_d                <= (others => '0');
-			test_case_id           <= 0;
+			test_case_id           <= 4;
 			start_tc               <= '0';
 
 		elsif (clk'event and clk='1') then
@@ -375,7 +375,7 @@ begin
 
 				-- Testcase is finished
 				when e_TC_COMPLETED =>
-					if(test_case_id>=5)then
+					if(test_case_id>=4)then
 						tc_ctrl_state <= e_TC_ALL_TESTS_COMPLETED;
 					else
 						tc_ctrl_state <= e_TC_START_TC;

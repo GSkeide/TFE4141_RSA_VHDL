@@ -64,40 +64,89 @@ entity rsa_core is
 
 	);
 end rsa_core;
+
+
 architecture rtl of rsa_core is
-	signal signal_msgin_ready : std_logic;
-	signal last_reg      : std_logic;
+        constant CORE_COUNT : INTEGER := 9;
+
+        type data_array_t is array (0 to CORE_COUNT-1)
+                of std_logic_vector(C_BLOCK_SIZE-1 downto 0);
+
+        -- Per-core handshake and data
+        signal core_valid_in  : std_logic_vector(CORE_COUNT-1 downto 0);
+        signal core_ready_in  : std_logic_vector(CORE_COUNT-1 downto 0);
+        signal core_valid_out : std_logic_vector(CORE_COUNT-1 downto 0);
+        signal core_ready_out : std_logic_vector(CORE_COUNT-1 downto 0);
+        signal core_result    : data_array_t;
+        signal core_last      : std_logic_vector(CORE_COUNT-1 downto 0);  -- 'last' flag per core
+
+        -- Round-robin pointers: next core to receive a message / next core to send its result
+        signal in_idx  : integer range 0 to CORE_COUNT-1;
+        signal out_idx : integer range 0 to CORE_COUNT-1;
+
+        signal in_ready  : std_logic;
+        signal out_valid : std_logic;
 begin
-	i_exponentiation : entity work.exponentiation
-		generic map (
-			C_block_size => C_BLOCK_SIZE
-		)
-		port map (
-			message   => msgin_data  ,
-			key       => key_e_d     ,
-			valid_in  => msgin_valid ,
-			ready_in  => signal_msgin_ready,
-			ready_out => msgout_ready,
-			valid_out => msgout_valid,
-			result    => msgout_data ,
-			modulus   => key_n       ,
-			clk       => clk         ,
-			reset_n   => reset_n
-		);
 
-	msgin_ready <= signal_msgin_ready;
+        gen_cores : for i in 0 to CORE_COUNT-1 generate
+                -- Only the core selected by the pointer sees valid_in / ready_out
+                core_valid_in(i)  <= msgin_valid  when in_idx  = i else '0';
+                core_ready_out(i) <= msgout_ready when out_idx = i else '0';
 
-	last_capture : process(clk, reset_n)
-	begin
-		if reset_n = '0' then
-			last_reg <= '0';
-		elsif rising_edge(clk) then
-			if msgin_valid = '1' and signal_msgin_ready = '1' then
-				last_reg <= msgin_last;
-			end if;
-		end if;
-	end process;
+                i_exponentiation : entity work.exponentiation
+                        generic map (
+                                C_block_size => C_BLOCK_SIZE
+                        )
+                        port map (
+                                message   => msgin_data,
+                                key       => key_e_d,
+                                valid_in  => core_valid_in(i),
+                                ready_in  => core_ready_in(i),
+                                ready_out => core_ready_out(i),
+                                valid_out => core_valid_out(i),
+                                result    => core_result(i),
+                                modulus   => key_n,
+                                clk       => clk,
+                                reset_n   => reset_n
+                        );
+        end generate gen_cores;
+        -- input
+        in_ready    <= core_ready_in(in_idx);
+        msgin_ready <= in_ready;
 
-	msgout_last  <= last_reg;
-	rsa_status   <= (others => '0');
+        -- Output
+        out_valid    <= core_valid_out(out_idx);
+        msgout_valid <= out_valid;
+        msgout_data  <= core_result(out_idx);
+        msgout_last  <= core_last(out_idx);
+
+        pointers : process(clk, reset_n)
+        begin
+                if reset_n = '0' then
+                        in_idx    <= 0;
+                        out_idx   <= 0;
+                        core_last <= (others => '0');
+                elsif rising_edge(clk) then
+                        
+                        if msgin_valid = '1' and in_ready = '1' then
+                                core_last(in_idx) <= msgin_last;
+                                if in_idx = CORE_COUNT-1 then
+                                        in_idx <= 0;
+                                else
+                                        in_idx <= in_idx + 1;
+                                end if;
+                        end if;
+
+                        
+                        if out_valid = '1' and msgout_ready = '1' then
+                                if out_idx = CORE_COUNT-1 then
+                                        out_idx <= 0;
+                                else
+                                        out_idx <= out_idx + 1;
+                                end if;
+                        end if;
+                end if;
+        end process pointers;
+
+        rsa_status <= (others => '0');
 end rtl;
